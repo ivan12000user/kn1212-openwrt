@@ -50,6 +50,22 @@ test -f "$BUILDER/repositories"
 # Never disable signature or dependency checks.
 grep -qx 'CONFIG_SIGNATURE_CHECK=y' "$BUILDER/.config"
 
+# 25.12.6 Image Builder leaves pkg_ver set across foreach iterations.
+# Reset the temporary variable before each package; retain all explicit pins.
+python3 - "$BUILDER/Makefile" "$OUT/evidence" <<'PY'
+from pathlib import Path
+import difflib, sys
+path = Path(sys.argv[1])
+before = path.read_text()
+needle = '  $(if $(findstring =,$(pkg)),$(eval pkg_ver:==$(lastword $(subst =, ,$(pkg)))))'
+assert before.count(needle) == 1, "Unexpected Image Builder version formatter"
+after = before.replace(needle, '  $(eval pkg_ver:=)\n' + needle)
+path.write_text(after)
+patch = ''.join(difflib.unified_diff(before.splitlines(True), after.splitlines(True),
+                                   fromfile='Makefile.original', tofile='Makefile'))
+(Path(sys.argv[2]) / 'imagebuilder-version-reset.patch').write_text(patch)
+PY
+
 # Trust is scoped to this explicit third-party AWG publisher.
 fetch "https://slava-shchipunov.github.io/awg-openwrt/keys/awg-openwrt-feed.pem" \
   "$BUILDER/keys/awg-openwrt-feed.pem"
@@ -80,7 +96,7 @@ python3 "$ROOT/scripts/validate.py" "$OUT"
 
 # Cache the exact retrieved packages for inspection and future offline recovery.
 # The cache is not advertised as an immediately installable offline repository.
-tar -czf "$OUT/package-cache.tar.gz" -C "$BUILDER" dl packages keys \
+tar -czf "$OUT/package-cache.tar.gz" -C "$BUILDER" dl packages \
   -C "$WORK" awg
 cp "$ROOT/README.md" "$OUT/README.md"
 cd "$OUT"
