@@ -59,4 +59,3 @@ Sysupgrade предназначен для уже установленного O
 - https://downloads.openwrt.org/releases/25.12.6/targets/ramips/mt76x8/
 - https://github.com/openwrt/openwrt/commit/7aecbefb5265c0af0103f2c451cb8b0a2616d30a
 - https://slava-shchipunov.github.io/awg-openwrt/25.12.6/ramips/mt76x8/
-

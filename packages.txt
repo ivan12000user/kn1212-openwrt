@@ -1,0 +1,21 @@
+# Additional packages; stock board defaults remain.
+luci
+luci-proto-mbim
+luci-proto-qmi
+luci-proto-ncm
+kmod-usb-net-cdc-mbim
+kmod-usb-net-qmi-wwan
+kmod-usb-net-cdc-ncm
+kmod-usb-net-cdc-ether
+kmod-usb-net-rndis
+kmod-usb-acm
+kmod-usb-serial-option
+umbim
+uqmi
+comgt-ncm
+usbutils
+tailscale=1.104.1-r1
+kmod-tun
+amneziawg-tools=3.1.20260812-r1
+kmod-amneziawg=6.12.112.3.1.20260906-r1
+luci-proto-amneziawg=3.1.0-r1

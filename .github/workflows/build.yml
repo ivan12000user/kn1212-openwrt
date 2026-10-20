@@ -1,0 +1,53 @@
+name: KN-1212 LTE TS AWG
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/build.yml"
+      - "scripts/**"
+      - "packages.txt"
+      - "README.md"
+permissions:
+  contents: read
+concurrency:
+  group: kn1212-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  firmware:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libncurses-dev libssl-dev \
+            zlib1g-dev gawk gettext rsync unzip file wget curl zstd python3
+      - name: Build and validate
+        run: |
+          python3 scripts/test_validate.py
+          bash -n scripts/build.sh
+          bash scripts/build.sh
+      - name: Upload validated build
+        uses: actions/upload-artifact@v4
+        with:
+          name: kn1212-25.12.6-lte-ts-awg-${{ github.run_number }}
+          path: |
+            output/images/
+            output/evidence/
+            output/package-cache.tar.gz
+            output/SHA256SUMS
+            output/BUILD-STATUS.txt
+            output/README.md
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-diagnostics-${{ github.run_number }}
+          path: |
+            output/logs/
+            output/evidence/
+          if-no-files-found: warn
+          retention-days: 14

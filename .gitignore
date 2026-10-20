@@ -1,0 +1,9 @@
+vendor/
+work/
+output/
+__pycache__/
+*.key
+*.conf
+*.ovpn
+*.pem
+!README.md
