@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/build.yml"
       - "scripts/**"
+      - "files/**"
       - "packages.txt"
       - "README.md"
 permissions:
@@ -31,7 +32,7 @@ jobs:
       - name: Upload validated build
         uses: actions/upload-artifact@v4
         with:
-          name: kn1212-25.12.6-lte-ts-awg-${{ github.run_number }}
+          name: kn1212-25.12.6-lte-ts-awg-compact-${{ github.run_number }}
           path: |
             output/images/
             output/evidence/

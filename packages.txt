@@ -1,5 +1,14 @@
-# Additional packages; stock board defaults remain.
-luci
+# Lean web UI: retain administration, Wi-Fi, firewall and LTE pages.
+# Exclude PPP/PPPoE: this build targets USB MBIM/QMI/NCM/Ethernet.
+luci-mod-admin-full
+luci-theme-bootstrap
+luci-app-firewall
+luci-proto-ipv6
+rpcd-mod-rrdns
+uhttpd
+uhttpd-mod-ubus
+-ppp
+-ppp-mod-pppoe
 luci-proto-mbim
 luci-proto-qmi
 luci-proto-ncm
@@ -13,7 +22,6 @@ kmod-usb-serial-option
 umbim
 uqmi
 comgt-ncm
-usbutils
 tailscale=1.104.1-r1
 kmod-tun
 amneziawg-tools=3.1.20260812-r1

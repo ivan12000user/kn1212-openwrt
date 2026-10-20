@@ -90,8 +90,10 @@ cp "$ROOT/packages.txt" "$OUT/evidence/"
 PACKAGES="$(sed -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' "$ROOT/packages.txt" | tr '\n' ' ')"
 cd "$BUILDER"
 make info > "$OUT/evidence/imagebuilder-info.txt"
+chmod 0755 "$ROOT/files/usr/bin/kn1212-usb-info"
 make image PROFILE="$PROFILE" PACKAGES="$PACKAGES" \
-  BIN_DIR="$OUT/images" DISABLED_SERVICES="tailscale"
+  BIN_DIR="$OUT/images" DISABLED_SERVICES="tailscale" \
+  FILES="$ROOT/files" EXTRA_IMAGE_NAME="compact"
 python3 "$ROOT/scripts/validate.py" "$OUT"
 
 # Cache the exact retrieved packages for inspection and future offline recovery.

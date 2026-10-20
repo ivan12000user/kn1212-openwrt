@@ -1,0 +1,19 @@
+#!/bin/sh
+# Read-only USB inventory. Does not reset, rebind or configure the modem.
+for device in /sys/bus/usb/devices/*; do
+    [ -r "$device/idVendor" ] || continue
+    vendor=$(cat "$device/idVendor")
+    product=$(cat "$device/idProduct")
+    printf '\n%s %s:%s\n' "${device##*/}" "$vendor" "$product"
+    for field in manufacturer product bConfigurationValue; do
+        if [ -r "$device/$field" ]; then
+            printf '%s: ' "$field"
+            cat "$device/$field"
+        fi
+    done
+    for interface in "$device":*; do
+        [ -d "$interface" ] || continue
+        driver=$(readlink "$interface/driver" 2>/dev/null)
+        printf 'interface %s driver %s\n' "${interface##*/}" "${driver##*/}"
+    done
+done

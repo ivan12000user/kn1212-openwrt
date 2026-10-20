@@ -26,7 +26,9 @@ class ArtifactGateTests(unittest.TestCase):
             "amneziawg-tools - 3.1.20260812-r1\n"
             "kmod-amneziawg - 6.12.112.3.1.20260906-r1\n"
             "luci-proto-amneziawg - 3.1.0-r1\n"
-            "umbim - test\nuqmi - test\nluci - test\n"
+            "umbim - test\nuqmi - test\nluci-mod-admin-full - test\n"
+            "luci-app-firewall - test\nluci-theme-bootstrap - test\nuhttpd - test\n"
+            "kmod-usb-net-qmi-wwan - test\ncomgt-ncm - test\nkmod-usb-net-rndis - test\n"
             "kmod-tun - test\nkmod-usb-net-cdc-mbim - test\n"
         )
 
@@ -48,6 +50,18 @@ class ArtifactGateTests(unittest.TestCase):
     def test_wrong_awg_module_is_rejected(self):
         self.manifest.write_text(self.manifest.read_text().replace("6.12.112.3.1", "6.12.94.3.1"))
         with self.assertRaisesRegex(RuntimeError, "kmod-amneziawg"):
+            module.validate(self.root)
+
+    def test_too_little_headroom_is_rejected(self):
+        image = self.root / "images/test-keenetic_kn-1212-squashfs-factory.bin"
+        with image.open("r+b") as stream:
+            stream.truncate(15073280 - 1048575)
+        with self.assertRaisesRegex(RuntimeError, "headroom"):
+            module.validate(self.root)
+
+    def test_removed_package_is_rejected(self):
+        self.manifest.write_text(self.manifest.read_text() + "usbids - test\n")
+        with self.assertRaisesRegex(RuntimeError, "Unwanted"):
             module.validate(self.root)
 
 
